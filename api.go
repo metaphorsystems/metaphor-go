@@ -38,6 +38,8 @@ const (
 	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
 	// If findLinks ednpoint is used needs to be nil to omit useAutoprompt field from RequestBody
 	DefaultAutoprompt = false
+	// DefaultSearchType
+	DefaultSearchType = "neural"
 
 	// DEFAULT API ENDPOINT URL's
 
@@ -50,6 +52,7 @@ const (
 )
 
 var (
+	ErrMissingToken 		  = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
 	ErrRequestFailed          = errors.New("request failed with error")
 	ErrSearchFailed           = errors.New("search failed with error")
 	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")
@@ -68,17 +71,14 @@ var (
 // Returns:
 // - *MetaphorClient: A new instance of the MetaphorClient.
 // - error: An error if the client creation fails.
-func NewClient(apiKey string, options ...ClientOptions) (*MetaphorClient, error) {
-	client := &MetaphorClient{
-		apiKey: apiKey,
-		RequestBody: &RequestBody{
-			NumResults:    DefaultNumResults,
-			UseAutoprompt: DefaultAutoprompt,
-		},
+func NewClient(apiKey string) (*MetaphorClient, error) {
+	if apiKey == "" {
+		return nil, ErrMissingToken
 	}
 
-	for _, option := range options {
-		option(client)
+	client := &MetaphorClient{
+		apiKey: apiKey,
+		RequestBody: &RequestBody{},
 	}
 
 	return client, nil
@@ -95,13 +95,19 @@ func NewClient(apiKey string, options ...ClientOptions) (*MetaphorClient, error)
 // - *SearchResponse: The search response object.
 // - error: An error if the search fails.
 func (client *MetaphorClient) Search(ctx context.Context, query string, options ...ClientOptions) (*SearchResponse, error) {
+	client.RequestBody = &RequestBody{
+		NumResults:    DefaultNumResults,
+		UseAutoprompt: DefaultAutoprompt,
+		Type: 		   DefaultSearchType,
+	}
+	
 	for _, option := range options {
 		option(client)
 	}
 
-	var searchResults = &SearchResponse{}
 	client.RequestBody.Query = query
 
+	searchResults := &SearchResponse{}
 	reqBytes, err := json.Marshal(client.RequestBody)
 	if err != nil {
 		return searchResults, fmt.Errorf("%v: %w", ErrSearchFailed, err)
@@ -140,13 +146,18 @@ func (client *MetaphorClient) Search(ctx context.Context, query string, options 
 // - *SearchResponse: The search response object.
 // - error: An error if the search fails. 
 func (client *MetaphorClient) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
+	client.RequestBody = &RequestBody{
+		NumResults:    DefaultNumResults,
+		UseAutoprompt: DefaultAutoprompt,
+	}
+
 	for _, option := range options {
 		option(client)
 	}
 
-	searchResults := &SearchResponse{}
 	client.RequestBody.Url = url
 
+	searchResults := &SearchResponse{}
 	reqBytes, err := json.Marshal(client.RequestBody)
 	if err != nil {
 		return searchResults, fmt.Errorf("%v: %w", ErrFindSimilarLinkdFailed, err)
