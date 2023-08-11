@@ -86,10 +86,14 @@ func NewClient(apiKey string, options ...ClientOptions) (*MetaphorClient, error)
 
 // Search searches for a given query using the Metaphor client.
 //
-// ctx: The context.Context for the request.
-// query: The search query.
-// options: The optional client options.
-// Return type: *SearchResponse, error.
+// Parameters:
+// - ctx: The context.Context for the request.
+// - query: The search query.
+// - options: The optional client options.
+//
+// Returns:
+// - *SearchResponse: The search response object.
+// - error: An error if the search fails.
 func (client *MetaphorClient) Search(ctx context.Context, query string, options ...ClientOptions) (*SearchResponse, error) {
 	for _, option := range options {
 		option(client)
@@ -127,10 +131,14 @@ func (client *MetaphorClient) Search(ctx context.Context, query string, options 
 
 // FindSimilar searches for similar urls using the provided URL.
 //
-// ctx: The context.Context for the function.
-// url: The URL to search for similar items.
-// options: Optional client options.
-// Return type: (*SearchResponse, error).
+// Parameters:
+// - ctx: The context.Context for the function.
+// - url: The URL to search for similar items.
+// - options: Optional client options.
+//
+// Returns:
+// - *SearchResponse: The search response object.
+// - error: An error if the search fails. 
 func (client *MetaphorClient) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
 	for _, option := range options {
 		option(client)
@@ -168,12 +176,13 @@ func (client *MetaphorClient) FindSimilar(ctx context.Context, url string, optio
 
 // GetContents retrieves the contents of urls for the given set of IDs.
 //
-// It takes the following parameters:
+// Parameters:
 // - ctx: the context.Context for the request.
 // - ids: a slice of strings containing the IDs to retrieve the contents for.
 //
-// It returns a *ContentsResponse which contains the retrieved contents,
-// and an error if any occurred.
+// Returns: 
+// - *ContentsResponse: The contents response object.
+// - error: An error if the contents retrieval fails.
 func (client *MetaphorClient) GetContents(ctx context.Context, ids []string) (*ContentsResponse, error) {
 	contentsResults := &ContentsResponse{}
 	joinedIds := strings.Join(ids, "\",\"")
@@ -203,8 +212,13 @@ func (client *MetaphorClient) GetContents(ctx context.Context, ids []string) (*C
 
 // runRequest sends an HTTP request and returns the response body as a byte array.
 //
-// It takes a context.Context object and an http.Request object as parameters.
-// It returns the response body as a byte array and an error object.
+// Parameters:
+// - ctx: the context.Context for the request.
+// - req: the HTTP request to send
+// 
+// Returns:
+// - []byte: the response body as a byte array
+// - error: an error if the request fails
 func (client *MetaphorClient) runRequest(ctx context.Context, req *http.Request) ([]byte, error) {
 	req.Header.Add("x-api-key", client.apiKey)
 	req.Header.Add("accept", "application/json")
