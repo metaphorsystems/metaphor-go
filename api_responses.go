@@ -27,7 +27,7 @@ type ErrorResponse struct {
 	Text string `json:"error"`
 }
 
-// GetContents retrieves contents for the latests search results.
+// GetContents retrieves contents for the latest search results.
 //
 // Parameters:
 // - ctx: the context.Context for the request.
@@ -36,7 +36,7 @@ type ErrorResponse struct {
 // Returns:
 // - *ContentsResponse: The contents response object.
 // - error: An error if the contents retrieval fails.
-func (response SearchResponse) GetContents(ctx context.Context, client *MetaphorClient) (*ContentsResponse, error) {
+func (response SearchResponse) GetContents(ctx context.Context, client *Client) (*ContentsResponse, error) {
 	ids := []string{}
 	for _, result := range response.Results {
 		ids = append(ids, result.Id)

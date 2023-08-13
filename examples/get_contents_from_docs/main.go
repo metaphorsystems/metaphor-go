@@ -45,7 +45,7 @@ func main() {
 	formatResults(resultContents)
 
 	//
-	// Extract the Document contencs for an array of id's
+	// Extract the Document contents for an array of id's
 	//
 	ids := make([]string, 0)
 	for _, result := range searchResults.Results {

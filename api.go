@@ -11,14 +11,48 @@ import (
 	"strings"
 )
 
-type MetaphorClient struct {
-	apiKey      string
-	RequestBody *RequestBody
-}
+const (
+	//// DEFAULT REQUEST VALUES.
+
+	// DefaultNumResults is the default number of expected results.
+	DefaultNumResults = 10
+	
+	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
+	// If findLinks ednpoint is used needs to be nil to omit useAutoprompt field from RequestBody.
+	DefaultAutoprompt = false
+	
+	// DefaultSearchType is a string defining what type of search will be performed, "neural" or by "keyword".
+	DefaultSearchType = "neural"
+
+	//// DEFAULT API ENDPOINT URL's
+
+	// DefaultSearchURL is the default url for metaphor systems api.
+	DefaultBaseURL      = "https://api.metaphor.systems"
+	
+	// DefaultSearchURL is the default search endpoint.
+	DefaultSearchURL    = "/search"
+	
+	// DefaultContentsURL is the default contents endpoint.
+	DefaultContentsURL  = "/contents"
+	
+	// DefaultFindLinksURL is the default find links endpoint.
+	DefaultFindLinksURL = "/findSimilar"
+)
+
+var (
+	ErrMissingApiKey = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
+	ErrRequestFailed          = errors.New("request failed with error")
+	ErrSearchFailed           = errors.New("search failed with error")
+	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")
+	ErrGetContentsFailed      = errors.New("get contents failed with error")
+	ErrNoSearchResults        = errors.New("no search results were found")
+	ErrNoLinksFound           = errors.New("no links were found")
+	ErrNoContentExtracted     = errors.New("no content was extracted")
+)
 
 type RequestBody struct {
 	Query              string   `json:"query,omitempty"`
-	Url                string   `json:"url,omitempty"`
+	URL                string   `json:"url,omitempty"`
 	NumResults         int      `json:"numResults,omitempty"`
 	IncludeDomains     []string `json:"includeDomains,omitempty"`
 	ExcludeDomains     []string `json:"excludeDomains,omitempty"`
@@ -30,37 +64,12 @@ type RequestBody struct {
 	Type               string   `json:"type,omitempty"`
 }
 
-const (
-	// DEFAULT REQUEST VALUES
-
-	// DefaultNumResults is the default number of expected results
-	DefaultNumResults = 10
-	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
-	// If findLinks ednpoint is used needs to be nil to omit useAutoprompt field from RequestBody
-	DefaultAutoprompt = false
-	// DefaultSearchType
-	DefaultSearchType = "neural"
-
-	// DEFAULT API ENDPOINT URL's
-
-	// DefaultSearchURL is the default search endpoint
-	DefaultSearchURL = "https://api.metaphor.systems/search"
-	// DefaultContentsURL is the default contents endpoint
-	DefaultContentsURL = "https://api.metaphor.systems/contents"
-	// DefaultFindLinksURL is the default find links endpoint
-	DefaultFindLinksURL = "https://api.metaphor.systems/findSimilar"
-)
-
-var (
-	ErrMissingToken 		  = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
-	ErrRequestFailed          = errors.New("request failed with error")
-	ErrSearchFailed           = errors.New("search failed with error")
-	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")
-	ErrGetContentsFailed      = errors.New("get contents failed with error")
-	ErrNoSearchResults        = errors.New("no search results were found")
-	ErrNoLinksFound           = errors.New("no links were found")
-	ErrNoContentExtracted     = errors.New("no content was extracted")
-)
+type Client struct {
+	apiKey      string
+	options 	[]ClientOptions
+	BaseURL 	string
+	RequestBody *RequestBody
+}
 
 // NewClient creates a new MetaphorClient with the provided API key and options.
 //
@@ -71,14 +80,17 @@ var (
 // Returns:
 // - *MetaphorClient: A new instance of the MetaphorClient.
 // - error: An error if the client creation fails.
-func NewClient(apiKey string) (*MetaphorClient, error) {
+func NewClient(apiKey string, options ...ClientOptions) (*Client, error) {
 	if apiKey == "" {
-		return nil, ErrMissingToken
+		return nil, ErrMissingApiKey
 	}
 
-	client := &MetaphorClient{
+	client := &Client{
 		apiKey: apiKey,
+		options: options,
+		BaseURL: DefaultBaseURL,
 		RequestBody: &RequestBody{},
+		
 	}
 
 	return client, nil
@@ -94,38 +106,36 @@ func NewClient(apiKey string) (*MetaphorClient, error) {
 // Returns:
 // - *SearchResponse: The search response object.
 // - error: An error if the search fails.
-func (client *MetaphorClient) Search(ctx context.Context, query string, options ...ClientOptions) (*SearchResponse, error) {
+func (client *Client) Search(ctx context.Context, query string, options ...ClientOptions) (*SearchResponse, error) {
+	searchResults := &SearchResponse{}
 	client.RequestBody = &RequestBody{
+		Query: 		   query,
 		NumResults:    DefaultNumResults,
 		UseAutoprompt: DefaultAutoprompt,
 		Type: 		   DefaultSearchType,
 	}
 	
-	for _, option := range options {
-		option(client)
-	}
+	client.loadOptions(options...)
 
-	client.RequestBody.Query = query
-
-	searchResults := &SearchResponse{}
 	reqBytes, err := json.Marshal(client.RequestBody)
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrSearchFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", DefaultSearchURL, bytes.NewBuffer(reqBytes))
+	reqURL := client.BaseURL + DefaultSearchURL
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrSearchFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
 	}
 
-	responseBody, err := client.runRequest(ctx, req)
+	responseBody, err := client.runRequest(req)
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrSearchFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
 	}
 
 	err = json.Unmarshal(responseBody, &searchResults)
 	if err != nil {
-		return nil, fmt.Errorf("%v: %w", ErrSearchFailed, err)
+		return nil, fmt.Errorf("%w: %w", ErrSearchFailed, err)
 	}
 
 	if len(searchResults.Results) == 0 {
@@ -145,37 +155,35 @@ func (client *MetaphorClient) Search(ctx context.Context, query string, options 
 // Returns:
 // - *SearchResponse: The search response object.
 // - error: An error if the search fails. 
-func (client *MetaphorClient) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
+func (client *Client) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
+	searchResults := &SearchResponse{}
 	client.RequestBody = &RequestBody{
+		URL: 		   url,
 		NumResults:    DefaultNumResults,
 		UseAutoprompt: DefaultAutoprompt,
 	}
 
-	for _, option := range options {
-		option(client)
-	}
+	client.loadOptions(options...)
 
-	client.RequestBody.Url = url
-
-	searchResults := &SearchResponse{}
 	reqBytes, err := json.Marshal(client.RequestBody)
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrFindSimilarLinkdFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", DefaultFindLinksURL, bytes.NewBuffer(reqBytes))
+	reqURL := client.BaseURL + DefaultFindLinksURL
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrFindSimilarLinkdFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
 	}
 
-	responseBody, err := client.runRequest(ctx, req)
+	responseBody, err := client.runRequest(req)
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrFindSimilarLinkdFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
 	}
 
 	err = json.Unmarshal(responseBody, &searchResults)
 	if err != nil {
-		return searchResults, fmt.Errorf("%v: %w", ErrFindSimilarLinkdFailed, err)
+		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
 	}
 
 	if len(searchResults.Results) == 0 {
@@ -194,24 +202,30 @@ func (client *MetaphorClient) FindSimilar(ctx context.Context, url string, optio
 // Returns: 
 // - *ContentsResponse: The contents response object.
 // - error: An error if the contents retrieval fails.
-func (client *MetaphorClient) GetContents(ctx context.Context, ids []string) (*ContentsResponse, error) {
+func (client *Client) GetContents(ctx context.Context, ids []string) (*ContentsResponse, error) {
+	client.loadOptions()
+	
 	contentsResults := &ContentsResponse{}
+	
 	joinedIds := strings.Join(ids, "\",\"")
-	url := fmt.Sprintf("%s?ids=\"%s\"", DefaultContentsURL, joinedIds)
+	
+	reqURL := client.BaseURL + DefaultContentsURL
+	
+	URL := fmt.Sprintf("%s?ids=\"%s\"", reqURL, joinedIds)
 
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, URL, nil)
 	if err != nil {
-		return contentsResults, fmt.Errorf("%v: %w", ErrGetContentsFailed, err)
+		return contentsResults, fmt.Errorf("%w: %w", ErrGetContentsFailed, err)
 	}
 
-	responseBody, err := client.runRequest(ctx, req)
+	responseBody, err := client.runRequest(req)
 	if err != nil {
-		return &ContentsResponse{}, fmt.Errorf("%v: %w", ErrGetContentsFailed, err)
+		return &ContentsResponse{}, fmt.Errorf("%w: %w", ErrGetContentsFailed, err)
 	}
 
 	err = json.Unmarshal(responseBody, &contentsResults)
 	if err != nil {
-		return contentsResults, fmt.Errorf("%v: %w", ErrGetContentsFailed, err)
+		return contentsResults, fmt.Errorf("%w: %w", ErrGetContentsFailed, err)
 	}
 
 	if len(contentsResults.Contents) == 0 {
@@ -230,7 +244,7 @@ func (client *MetaphorClient) GetContents(ctx context.Context, ids []string) (*C
 // Returns:
 // - []byte: the response body as a byte array
 // - error: an error if the request fails
-func (client *MetaphorClient) runRequest(ctx context.Context, req *http.Request) ([]byte, error) {
+func (client *Client) runRequest(req *http.Request) ([]byte, error) {
 	req.Header.Add("x-api-key", client.apiKey)
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("content-type", "application/json")
@@ -261,5 +275,12 @@ func (client *MetaphorClient) runRequest(ctx context.Context, req *http.Request)
 	return body, nil
 }
 
+func (client *Client) loadOptions(options ...ClientOptions) {
+	if len(options) > 0 {
+		client.options = options
+	}
 
-
+	for _, option := range client.options {
+		option(client)
+	}
+}

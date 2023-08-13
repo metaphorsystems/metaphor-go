@@ -1,6 +1,6 @@
 package metaphor
 
-type ClientOptions func(*MetaphorClient)
+type ClientOptions func(*Client)
 
 // WithNumResults sets the number of expected search results.
 //
@@ -9,7 +9,7 @@ type ClientOptions func(*MetaphorClient)
 //
 // Returns: a ClientOptions function that updates the numResults field of the RequestBody struct.
 func WithNumResults(numResults int) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.NumResults = numResults
 	}
 }
@@ -24,7 +24,7 @@ func WithNumResults(numResults int) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the includeDomains field of the RequestBody struct.
 func WithIncludeDomains(includeDomains []string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.IncludeDomains = includeDomains
 	}
 }
@@ -38,7 +38,7 @@ func WithIncludeDomains(includeDomains []string) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the excludeDomains field of the RequestBody struct.
 func WithExcludeDomains(excludeDomains []string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.ExcludeDomains = excludeDomains
 	}
 }
@@ -53,7 +53,7 @@ func WithExcludeDomains(excludeDomains []string) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the startCrawlDate field of the RequestBody struct.
 func WithStartCrawlDate(startCrawlDate string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.StartCrawlDate = startCrawlDate
 	}
 }
@@ -68,7 +68,7 @@ func WithStartCrawlDate(startCrawlDate string) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the endCrawlDate field of the RequestBody struct.
 func WithEndCrawlDate(endCrawlDate string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.EndCrawlDate = endCrawlDate
 	}
 }
@@ -83,7 +83,7 @@ func WithEndCrawlDate(endCrawlDate string) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the startPublishedDate field of the RequestBody struct.
 func WithStartPublishedDate(startPublishedDate string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.StartPublishedDate = startPublishedDate
 	}
 }
@@ -98,7 +98,7 @@ func WithStartPublishedDate(startPublishedDate string) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the endPublishedDate field of the RequestBody struct.
 func WithEndPublishedDate(endPublishedDate string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.EndPublishedDate = endPublishedDate
 	}
 }
@@ -112,7 +112,7 @@ func WithEndPublishedDate(endPublishedDate string) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the useAutoprompt field of the RequestBody struct.
 func WithAutoprompt(useAutoprompt bool) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.UseAutoprompt = useAutoprompt
 	}
 }
@@ -127,7 +127,21 @@ func WithAutoprompt(useAutoprompt bool) ClientOptions {
 //
 // Returns: a ClientOptions function that updates the type field of the RequestBody struct.
 func WithType(searchType string) ClientOptions {
-	return func(client *MetaphorClient) {
+	return func(client *Client) {
 		client.RequestBody.Type = searchType
+	}
+}
+
+// WithType sets the base api URK type for the client.
+// Default: "https://api.metaphor.systems"
+//
+// Parameters: 
+// - baseURL: the metaphor api url string .
+//
+// Returns: a ClientOptions function that updates the baseURL field of the Client struct.
+
+func WithBaseURL(baseURL string) ClientOptions {
+	return func(client *Client) {
+		client.BaseURL = baseURL
 	}
 }
