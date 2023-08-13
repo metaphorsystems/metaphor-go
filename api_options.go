@@ -131,7 +131,7 @@ func WithType(searchType string) ClientOptions {
 	}
 }
 
-// WithType sets the base api URK type for the client.
+// WithBaseURL sets the base api URK type for the client.
 // Default: "https://api.metaphor.systems"
 //
 // Parameters:

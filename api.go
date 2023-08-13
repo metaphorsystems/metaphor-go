@@ -26,17 +26,17 @@ const (
 
 	//// DEFAULT API ENDPOINT URL's
 
-	// DefaultSearchURL is the default url for metaphor systems api.
+	// DefaultSearchPath is the default url for metaphor systems api.
 	DefaultBaseURL = "https://api.metaphor.systems"
 
-	// DefaultSearchURL is the default search endpoint.
-	DefaultSearchURL = "/search"
+	// DefaultSearchPath is the default search endpoint.
+	DefaultSearchPath = "/search"
 
-	// DefaultContentsURL is the default contents endpoint.
-	DefaultContentsURL = "/contents"
+	// DefaultContentsPath is the default contents endpoint.
+	DefaultContentsPath = "/contents"
 
-	// DefaultFindLinksURL is the default find links endpoint.
-	DefaultFindLinksURL = "/findSimilar"
+	// DefaultFindSimilarPath is the default find links endpoint.
+	DefaultFindSimilarPath = "/findSimilar"
 )
 
 var (
@@ -121,7 +121,7 @@ func (client *Client) Search(ctx context.Context, query string, options ...Clien
 		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
 	}
 
-	reqURL := client.BaseURL + DefaultSearchURL
+	reqURL := client.BaseURL + DefaultSearchPath
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
@@ -169,7 +169,7 @@ func (client *Client) FindSimilar(ctx context.Context, url string, options ...Cl
 		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
 	}
 
-	reqURL := client.BaseURL + DefaultFindLinksURL
+	reqURL := client.BaseURL + DefaultFindSimilarPath
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
@@ -208,7 +208,7 @@ func (client *Client) GetContents(ctx context.Context, ids []string) (*ContentsR
 
 	joinedIds := strings.Join(ids, "\",\"")
 
-	reqURL := client.BaseURL + DefaultContentsURL
+	reqURL := client.BaseURL + DefaultContentsPath
 
 	URL := fmt.Sprintf("%s?ids=\"%s\"", reqURL, joinedIds)
 
