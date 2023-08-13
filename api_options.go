@@ -5,7 +5,7 @@ type ClientOptions func(*Client)
 // WithNumResults sets the number of expected search results.
 //
 // Parameters:
-//  - numResults: The desired number of results.
+//   - numResults: The desired number of results.
 //
 // Returns: a ClientOptions function that updates the numResults field of the RequestBody struct.
 func WithNumResults(numResults int) ClientOptions {
@@ -15,11 +15,11 @@ func WithNumResults(numResults int) ClientOptions {
 }
 
 // WithIncludeDomains sets the includeDomains field of the RequestBody.
-// List of domains to include in the search. If specified, results will 
-// only come from these domains. Only one of includeDomains and excludeDomains 
+// List of domains to include in the search. If specified, results will
+// only come from these domains. Only one of includeDomains and excludeDomains
 // should be specified.
 //
-// Parameters: 
+// Parameters:
 // - includeDomains: a slice of strings representing the domains to include.
 //
 // Returns: a ClientOptions function that updates the includeDomains field of the RequestBody struct.
@@ -30,10 +30,10 @@ func WithIncludeDomains(includeDomains []string) ClientOptions {
 }
 
 // WithExcludeDomains sets the ExcludeDomains field of the client's RequestBody.
-// List of domains to exclude in the search. If specified, results will only come 
+// List of domains to exclude in the search. If specified, results will only come
 // from these domains. Only one of includeDomains and excludeDomains should be specified.
 //
-// Parameters: 
+// Parameters:
 // - excludeDomains: an array of strings representing the domains to be excluded.
 //
 // Returns: a ClientOptions function that updates the excludeDomains field of the RequestBody struct.
@@ -44,11 +44,11 @@ func WithExcludeDomains(excludeDomains []string) ClientOptions {
 }
 
 // WithStartCrawlDate sets the start crawl date for the client options.
-// If startCrawlDate is specified, results will only include links that 
-// were crawled after startCrawlDate. 
+// If startCrawlDate is specified, results will only include links that
+// were crawled after startCrawlDate.
 // Must be specified in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 //
-// Parameters: 
+// Parameters:
 // - startCrawlDate: the start date for the crawl
 //
 // Returns: a ClientOptions function that updates the startCrawlDate field of the RequestBody struct.
@@ -59,11 +59,11 @@ func WithStartCrawlDate(startCrawlDate string) ClientOptions {
 }
 
 // WithEndCrawlDate sets the end crawl date for the client options.
-// If endCrawlDate is specified, results will only include links that 
-// were crawled before endCrawlDate. 
+// If endCrawlDate is specified, results will only include links that
+// were crawled before endCrawlDate.
 // Must be specified in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 //
-// Parameters: 
+// Parameters:
 // - endCrawlDate: the end crawl date to be set.
 //
 // Returns: a ClientOptions function that updates the endCrawlDate field of the RequestBody struct.
@@ -74,11 +74,11 @@ func WithEndCrawlDate(endCrawlDate string) ClientOptions {
 }
 
 // WithStartPublishedDate sets the start published date for the client options.
-// If specified, only links with a published date after startPublishedDate will 
-// be returned. 
+// If specified, only links with a published date after startPublishedDate will
+// be returned.
 // Must be specified in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ).
-// 
-// Parameters: 
+//
+// Parameters:
 // - startPublishedDate: a string representing the start published date.
 //
 // Returns: a ClientOptions function that updates the startPublishedDate field of the RequestBody struct.
@@ -89,11 +89,11 @@ func WithStartPublishedDate(startPublishedDate string) ClientOptions {
 }
 
 // WithEndPublishedDate sets the end published date for the client options.
-// If specified, only links with a published date before endPublishedDate will 
-// be returned. 
-// Must be specified in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). 
+// If specified, only links with a published date before endPublishedDate will
+// be returned.
+// Must be specified in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ).
 //
-// Parameters: 
+// Parameters:
 // - endPublishedDate: the end published date to be set.
 //
 // Returns: a ClientOptions function that updates the endPublishedDate field of the RequestBody struct.
@@ -104,7 +104,7 @@ func WithEndPublishedDate(endPublishedDate string) ClientOptions {
 }
 
 // WithAutoprompt sets the value of the UseAutoprompt field in the RequestBody.
-// If true, your query will be converted to a Metaphor query. Latency will be much higher. 
+// If true, your query will be converted to a Metaphor query. Latency will be much higher.
 // Default: false
 //
 // Parameters:
@@ -117,12 +117,11 @@ func WithAutoprompt(useAutoprompt bool) ClientOptions {
 	}
 }
 
-
 // WithType sets the search type for the client.
-// Type of search, 'keyword' or 'neural'. 
+// Type of search, 'keyword' or 'neural'.
 // Default: neural
 //
-// Parameters: 
+// Parameters:
 // - searchType: the type of search to be performed.
 //
 // Returns: a ClientOptions function that updates the type field of the RequestBody struct.
@@ -135,7 +134,7 @@ func WithType(searchType string) ClientOptions {
 // WithType sets the base api URK type for the client.
 // Default: "https://api.metaphor.systems"
 //
-// Parameters: 
+// Parameters:
 // - baseURL: the metaphor api url string .
 //
 // Returns: a ClientOptions function that updates the baseURL field of the Client struct.
