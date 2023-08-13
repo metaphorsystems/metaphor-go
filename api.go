@@ -16,31 +16,31 @@ const (
 
 	// DefaultNumResults is the default number of expected results.
 	DefaultNumResults = 10
-	
+
 	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
 	// If findLinks ednpoint is used needs to be nil to omit useAutoprompt field from RequestBody.
 	DefaultAutoprompt = false
-	
+
 	// DefaultSearchType is a string defining what type of search will be performed, "neural" or by "keyword".
 	DefaultSearchType = "neural"
 
 	//// DEFAULT API ENDPOINT URL's
 
-	// DefaultSearchURL is the default url for metaphor systems api.
-	DefaultBaseURL      = "https://api.metaphor.systems"
-	
-	// DefaultSearchURL is the default search endpoint.
-	DefaultSearchURL    = "/search"
-	
-	// DefaultContentsURL is the default contents endpoint.
-	DefaultContentsURL  = "/contents"
-	
-	// DefaultFindLinksURL is the default find links endpoint.
-	DefaultFindLinksURL = "/findSimilar"
+	// DefaultSearchPath is the default url for metaphor systems api.
+	DefaultBaseURL = "https://api.metaphor.systems"
+
+	// DefaultSearchPath is the default search endpoint.
+	DefaultSearchPath = "/search"
+
+	// DefaultContentsPath is the default contents endpoint.
+	DefaultContentsPath = "/contents"
+
+	// DefaultFindSimilarPath is the default find links endpoint.
+	DefaultFindSimilarPath = "/findSimilar"
 )
 
 var (
-	ErrMissingApiKey 		  = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
+	ErrMissingApiKey          = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
 	ErrRequestFailed          = errors.New("request failed with error")
 	ErrSearchFailed           = errors.New("search failed with error")
 	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")
@@ -66,8 +66,8 @@ type RequestBody struct {
 
 type Client struct {
 	apiKey      string
-	options 	[]ClientOptions
-	BaseURL 	string
+	options     []ClientOptions
+	BaseURL     string
 	RequestBody *RequestBody
 }
 
@@ -86,11 +86,10 @@ func NewClient(apiKey string, options ...ClientOptions) (*Client, error) {
 	}
 
 	client := &Client{
-		apiKey: apiKey,
-		options: options,
-		BaseURL: DefaultBaseURL,
+		apiKey:      apiKey,
+		options:     options,
+		BaseURL:     DefaultBaseURL,
 		RequestBody: &RequestBody{},
-		
 	}
 
 	return client, nil
@@ -109,12 +108,12 @@ func NewClient(apiKey string, options ...ClientOptions) (*Client, error) {
 func (client *Client) Search(ctx context.Context, query string, options ...ClientOptions) (*SearchResponse, error) {
 	searchResults := &SearchResponse{}
 	client.RequestBody = &RequestBody{
-		Query: 		   query,
+		Query:         query,
 		NumResults:    DefaultNumResults,
 		UseAutoprompt: DefaultAutoprompt,
-		Type: 		   DefaultSearchType,
+		Type:          DefaultSearchType,
 	}
-	
+
 	client.loadOptions(options...)
 
 	reqBytes, err := json.Marshal(client.RequestBody)
@@ -122,7 +121,7 @@ func (client *Client) Search(ctx context.Context, query string, options ...Clien
 		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
 	}
 
-	reqURL := client.BaseURL + DefaultSearchURL
+	reqURL := client.BaseURL + DefaultSearchPath
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return searchResults, fmt.Errorf("%w: %w", ErrSearchFailed, err)
@@ -154,11 +153,11 @@ func (client *Client) Search(ctx context.Context, query string, options ...Clien
 //
 // Returns:
 // - *SearchResponse: The search response object.
-// - error: An error if the search fails. 
+// - error: An error if the search fails.
 func (client *Client) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
 	searchResults := &SearchResponse{}
 	client.RequestBody = &RequestBody{
-		URL: 		   url,
+		URL:           url,
 		NumResults:    DefaultNumResults,
 		UseAutoprompt: DefaultAutoprompt,
 	}
@@ -170,7 +169,7 @@ func (client *Client) FindSimilar(ctx context.Context, url string, options ...Cl
 		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
 	}
 
-	reqURL := client.BaseURL + DefaultFindLinksURL
+	reqURL := client.BaseURL + DefaultFindSimilarPath
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(reqBytes))
 	if err != nil {
 		return searchResults, fmt.Errorf("%w: %w", ErrFindSimilarLinkdFailed, err)
@@ -199,18 +198,18 @@ func (client *Client) FindSimilar(ctx context.Context, url string, options ...Cl
 // - ctx: the context.Context for the request.
 // - ids: a slice of strings containing the IDs to retrieve the contents for.
 //
-// Returns: 
+// Returns:
 // - *ContentsResponse: The contents response object.
 // - error: An error if the contents retrieval fails.
 func (client *Client) GetContents(ctx context.Context, ids []string) (*ContentsResponse, error) {
 	client.loadOptions()
-	
+
 	contentsResults := &ContentsResponse{}
-	
+
 	joinedIds := strings.Join(ids, "\",\"")
-	
-	reqURL := client.BaseURL + DefaultContentsURL
-	
+
+	reqURL := client.BaseURL + DefaultContentsPath
+
 	URL := fmt.Sprintf("%s?ids=\"%s\"", reqURL, joinedIds)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, URL, nil)
@@ -240,7 +239,7 @@ func (client *Client) GetContents(ctx context.Context, ids []string) (*ContentsR
 // Parameters:
 // - ctx: the context.Context for the request.
 // - req: the HTTP request to send
-// 
+//
 // Returns:
 // - []byte: the response body as a byte array
 // - error: an error if the request fails
