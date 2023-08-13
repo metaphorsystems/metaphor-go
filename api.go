@@ -40,7 +40,7 @@ const (
 )
 
 var (
-	ErrMissingApiKey = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
+	ErrMissingApiKey 		  = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
 	ErrRequestFailed          = errors.New("request failed with error")
 	ErrSearchFailed           = errors.New("search failed with error")
 	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")

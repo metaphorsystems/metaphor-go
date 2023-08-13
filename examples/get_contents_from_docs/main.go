@@ -49,7 +49,7 @@ func main() {
 	//
 	ids := make([]string, 0)
 	for _, result := range searchResults.Results {
-		ids = append(ids, result.Id)
+		ids = append(ids, result.ID)
 	}
 
 	contents, err := client.GetContents(ctx, ids)
@@ -66,7 +66,7 @@ func formatResults(response *metaphor.ContentsResponse) {
 	formattedResults := ""
 
 	for _, result := range response.Contents {
-		formattedResults += fmt.Sprintf("Title: %s\nURL: %s\nID: %s\n Content: %s\n\n", result.Title, result.Url, result.Id, result.Extract)
+		formattedResults += fmt.Sprintf("Title: %s\nURL: %s\nID: %s\n Content: %s\n\n", result.Title, result.URL, result.ID, result.Extract)
 	}
 
 	println(formattedResults)

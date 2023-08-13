@@ -4,8 +4,8 @@ import "context"
 
 type SearchResponse struct {
 	Results []struct {
-		Id            string  `json:"id"`
-		Url           string  `json:"url"`
+		ID            string  `json:"id"`
+		URL           string  `json:"url"`
 		Title         string  `json:"title"`
 		PublishedDate string  `json:"publishedDate"`
 		Author        string  `json:"author"`
@@ -16,9 +16,9 @@ type SearchResponse struct {
 
 type ContentsResponse struct {
 	Contents []struct {
-		Url     string `json:"url"`
+		ID      string `json:"id"`
+		URL     string `json:"url"`
 		Title   string `json:"title"`
-		Id      string `json:"id"`
 		Extract string `json:"extract"`
 	} `json:"contents"`
 }
@@ -39,7 +39,7 @@ type ErrorResponse struct {
 func (response SearchResponse) GetContents(ctx context.Context, client *Client) (*ContentsResponse, error) {
 	ids := []string{}
 	for _, result := range response.Results {
-		ids = append(ids, result.Id)
+		ids = append(ids, result.ID)
 	}
 	return client.GetContents(ctx, ids)
 }

@@ -35,7 +35,7 @@ func main() {
 	fmt.Println("Search results: ")
 	formatResults(searchResults)
 
-	searchLink := searchResults.Results[0].Url
+	searchLink := searchResults.Results[0].URL
 	linkSearchResults, err := client.FindSimilar(
 		ctx, 
 		searchLink, 
@@ -52,7 +52,7 @@ func formatResults(response *metaphor.SearchResponse) {
 	formattedResults := ""
 
 	for _, result := range response.Results {
-		formattedResults += fmt.Sprintf("Title: %s\nURL: %s\nID: %s\n\n", result.Title, result.Url, result.Id)
+		formattedResults += fmt.Sprintf("Title: %s\nURL: %s\nID: %s\n\n", result.Title, result.URL, result.ID)
 	}
 
 	println(formattedResults)

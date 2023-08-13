@@ -45,7 +45,7 @@ func formatResults(response *metaphor.ContentsResponse) {
 	formattedResults := ""
 
 	for _, result := range response.Contents {
-		formattedResults += fmt.Sprintf("Title: %s\nURL: %s\nID: %s\n Content: %s\n\n", result.Title, result.Url, result.Id, result.Extract)
+		formattedResults += fmt.Sprintf("Title: %s\nURL: %s\nID: %s\n Content: %s\n\n", result.Title, result.URL, result.ID, result.Extract)
 	}
 
 	println(formattedResults)
