@@ -138,7 +138,6 @@ func WithType(searchType string) ClientOptions {
 // - baseURL: the metaphor api url string .
 //
 // Returns: a ClientOptions function that updates the baseURL field of the Client struct.
-
 func WithBaseURL(baseURL string) ClientOptions {
 	return func(client *Client) {
 		client.BaseURL = baseURL
