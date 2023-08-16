@@ -202,9 +202,9 @@ func (client *Client) FindSimilar(ctx context.Context, url string, options ...Cl
 // - *ContentsResponse: The contents response object.
 // - error: An error if the contents retrieval fails.
 func (client *Client) GetContents(ctx context.Context, ids []string) (*ContentsResponse, error) {
-	client.loadOptions()
-
 	contentsResults := &ContentsResponse{}
+	
+	client.loadOptions()
 
 	joinedIds := strings.Join(ids, "\",\"")
 
@@ -219,7 +219,7 @@ func (client *Client) GetContents(ctx context.Context, ids []string) (*ContentsR
 
 	responseBody, err := client.runRequest(req)
 	if err != nil {
-		return &ContentsResponse{}, fmt.Errorf("%w: %w", ErrGetContentsFailed, err)
+		return contentsResults, fmt.Errorf("%w: %w", ErrGetContentsFailed, err)
 	}
 
 	err = json.Unmarshal(responseBody, &contentsResults)

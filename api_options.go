@@ -1,5 +1,17 @@
 package metaphor
 
+type RequestOptions struct {
+	NumResults         int      `json:"numResults,omitempty"`
+	IncludeDomains     []string `json:"includeDomains,omitempty"`
+	ExcludeDomains     []string `json:"excludeDomains,omitempty"`
+	StartCrawlDate     string   `json:"startCrawlDate,omitempty"`
+	EndCrawlDate       string   `json:"endCrawlDate,omitempty"`
+	StartPublishedDate string   `json:"startPublishedDate,omitempty"`
+	EndPublishedDate   string   `json:"endPublishedDate,omitempty"`
+	UseAutoprompt      bool     `json:"useAutoprompt,omitempty"`
+	Type               string   `json:"type,omitempty"`
+}
+
 type ClientOptions func(*Client)
 
 // WithNumResults sets the number of expected search results.
@@ -141,5 +153,50 @@ func WithType(searchType string) ClientOptions {
 func WithBaseURL(baseURL string) ClientOptions {
 	return func(client *Client) {
 		client.BaseURL = baseURL
+	}
+}
+
+// WithRequestOptions sets the request options for the client.
+//
+// Parameters:
+// - reqOptions: The request options to be set of RequestOptions type.
+// Returns: a ClientOptions function that updates the RequestBody with additional options.
+func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
+	return func(client *Client) {
+		if reqOptions.EndCrawlDate != "" {
+			client.RequestBody.EndCrawlDate = reqOptions.EndCrawlDate
+		}
+
+		if reqOptions.EndPublishedDate != "" {
+			client.RequestBody.EndPublishedDate = reqOptions.EndPublishedDate
+		}
+
+		if reqOptions.StartCrawlDate != "" {
+			client.RequestBody.StartCrawlDate = reqOptions.StartCrawlDate
+		}
+
+		if reqOptions.StartPublishedDate != "" {
+			client.RequestBody.StartPublishedDate = reqOptions.StartPublishedDate
+		}
+
+		if reqOptions.UseAutoprompt {
+			client.RequestBody.UseAutoprompt = reqOptions.UseAutoprompt
+		}
+
+		if reqOptions.Type != "" {
+			client.RequestBody.Type = reqOptions.Type
+		}
+
+		if reqOptions.NumResults != 0 {
+			client.RequestBody.NumResults = reqOptions.NumResults
+		}
+
+		if reqOptions.ExcludeDomains != nil {
+			client.RequestBody.ExcludeDomains = reqOptions.ExcludeDomains
+		}
+
+		if reqOptions.IncludeDomains != nil {
+			client.RequestBody.IncludeDomains = reqOptions.IncludeDomains
+		}
 	}
 }
