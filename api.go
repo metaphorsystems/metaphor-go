@@ -18,7 +18,7 @@ const (
 	DefaultNumResults = 10
 
 	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
-	// If findLinks ednpoint is used needs to be nil to omit useAutoprompt field from RequestBody.
+	// If findLinks ednpoint is used, this needs to be nil to omit useAutoprompt field from RequestBody.
 	DefaultAutoprompt = false
 
 	// DefaultSearchType is a string defining what type of search will be performed, "neural" or by "keyword".
@@ -40,14 +40,14 @@ const (
 )
 
 var (
-	ErrMissingApiKey          = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
-	ErrRequestFailed          = errors.New("request failed with error")
-	ErrSearchFailed           = errors.New("search failed with error")
+	ErrMissingApiKey = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
+	ErrRequestFailed = errors.New("request failed with error")
+	ErrSearchFailed = errors.New("search failed with error")
 	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")
-	ErrGetContentsFailed      = errors.New("get contents failed with error")
-	ErrNoSearchResults        = errors.New("no search results were found")
-	ErrNoLinksFound           = errors.New("no links were found")
-	ErrNoContentExtracted     = errors.New("no content was extracted")
+	ErrGetContentsFailed = errors.New("get contents failed with error")
+	ErrNoSearchResults = errors.New("no search results were found")
+	ErrNoLinksFound = errors.New("no links were found")
+	ErrNoContentExtracted = errors.New("no content was extracted")
 )
 
 type RequestBody struct {
