@@ -115,6 +115,20 @@ func WithEndPublishedDate(endPublishedDate string) ClientOptions {
 	}
 }
 
+
+// IF ExcludeSourceDomain is true, links from the base domain of the input will be 
+// automatically excluded from the results. Default: true
+//
+// Parameters:
+// - excludeSourceDomain: a boolean value indicating whether to exclude the source domain.
+//
+// Returns: a ClientOptions function that updates the ExcludeSourceDomain field in the RequestBody struct.
+func WithExcludeSourceDomain(excludeSourceDomain bool) ClientOptions {
+	return func(client *Client) {
+		client.RequestBody.ExcludeSourceDomain = excludeSourceDomain
+	}
+}
+
 // WithAutoprompt sets the value of the UseAutoprompt field in the RequestBody.
 // If true, your query will be converted to a Metaphor query. Latency will be much higher.
 // Default: false
