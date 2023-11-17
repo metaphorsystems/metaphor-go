@@ -122,7 +122,6 @@ Retrieves document contents:
   } 
 
   fmt.Println(formattedResults)
-}
 ```
 
 
