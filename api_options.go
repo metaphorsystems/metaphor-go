@@ -118,7 +118,8 @@ func WithEndPublishedDate(endPublishedDate string) ClientOptions {
 
 
 // IF ExcludeSourceDomain is true, links from the base domain of the input will be 
-// automatically excluded from the results. Default: true
+// automatically excluded from the results. 
+// Default: true
 //
 // Parameters:
 // - excludeSourceDomain: a boolean value indicating whether to exclude the source domain.
@@ -194,10 +195,6 @@ func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
 			client.RequestBody.StartPublishedDate = reqOptions.StartPublishedDate
 		}
 
-		if reqOptions.ExcludeSourceDomain {
-			client.RequestBody.ExcludeSourceDomain = reqOptions.ExcludeSourceDomain
-		}
-
 		if reqOptions.UseAutoprompt {
 			client.RequestBody.UseAutoprompt = reqOptions.UseAutoprompt
 		}
@@ -217,5 +214,7 @@ func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
 		if reqOptions.IncludeDomains != nil {
 			client.RequestBody.IncludeDomains = reqOptions.IncludeDomains
 		}
+
+		client.RequestBody.ExcludeSourceDomain = reqOptions.ExcludeSourceDomain
 	}
 }
