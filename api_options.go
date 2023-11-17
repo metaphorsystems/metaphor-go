@@ -195,6 +195,10 @@ func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
 			client.RequestBody.StartPublishedDate = reqOptions.StartPublishedDate
 		}
 
+		if reqOptions.ExcludeSourceDomain {
+			client.RequestBody.ExcludeSourceDomain = reqOptions.ExcludeSourceDomain
+		}
+
 		if reqOptions.UseAutoprompt {
 			client.RequestBody.UseAutoprompt = reqOptions.UseAutoprompt
 		}
@@ -214,7 +218,5 @@ func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
 		if reqOptions.IncludeDomains != nil {
 			client.RequestBody.IncludeDomains = reqOptions.IncludeDomains
 		}
-
-		client.RequestBody.ExcludeSourceDomain = reqOptions.ExcludeSourceDomain
 	}
 }

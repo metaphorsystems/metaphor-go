@@ -17,6 +17,9 @@ const (
 	// DefaultNumResults is the default number of expected results.
 	DefaultNumResults = 10
 
+	// DefaultExcludeSourceDomain is the default value for excludeSourceDomain.
+	DefaultExcludeSourceDomain = true
+
 	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
 	DefaultAutoprompt = false
 
@@ -157,9 +160,10 @@ func (client *Client) Search(ctx context.Context, query string, options ...Clien
 func (client *Client) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
 	searchResults := &SearchResponse{}
 	client.RequestBody = &RequestBody{
-		URL:           url,
-		NumResults:    DefaultNumResults,
-		UseAutoprompt: DefaultAutoprompt,
+		URL:           			 url,
+		NumResults:    			 DefaultNumResults,
+		UseAutoprompt: 			 DefaultAutoprompt,
+		ExcludeSourceDomain: DefaultExcludeSourceDomain,
 	}
 
 	client.loadOptions(options...)
