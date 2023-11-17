@@ -1,15 +1,16 @@
 package metaphor
 
 type RequestOptions struct {
-	NumResults         int      `json:"numResults,omitempty"`
-	IncludeDomains     []string `json:"includeDomains,omitempty"`
-	ExcludeDomains     []string `json:"excludeDomains,omitempty"`
-	StartCrawlDate     string   `json:"startCrawlDate,omitempty"`
-	EndCrawlDate       string   `json:"endCrawlDate,omitempty"`
-	StartPublishedDate string   `json:"startPublishedDate,omitempty"`
-	EndPublishedDate   string   `json:"endPublishedDate,omitempty"`
-	UseAutoprompt      bool     `json:"useAutoprompt,omitempty"`
-	Type               string   `json:"type,omitempty"`
+	NumResults          int      `json:"numResults,omitempty"`
+	IncludeDomains      []string `json:"includeDomains,omitempty"`
+	ExcludeDomains      []string `json:"excludeDomains,omitempty"`
+	StartCrawlDate      string   `json:"startCrawlDate,omitempty"`
+	EndCrawlDate        string   `json:"endCrawlDate,omitempty"`
+	StartPublishedDate  string   `json:"startPublishedDate,omitempty"`
+	EndPublishedDate    string   `json:"endPublishedDate,omitempty"`
+	ExcludeSourceDomain bool     `json:"excludeSourceDomain,omitempty"`
+	UseAutoprompt       bool     `json:"useAutoprompt,omitempty"`
+	Type                string   `json:"type,omitempty"`
 }
 
 type ClientOptions func(*Client)
@@ -191,6 +192,10 @@ func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
 
 		if reqOptions.StartPublishedDate != "" {
 			client.RequestBody.StartPublishedDate = reqOptions.StartPublishedDate
+		}
+
+		if reqOptions.ExcludeSourceDomain {
+			client.RequestBody.ExcludeSourceDomain = reqOptions.ExcludeSourceDomain
 		}
 
 		if reqOptions.UseAutoprompt {
