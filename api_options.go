@@ -117,7 +117,7 @@ func WithEndPublishedDate(endPublishedDate string) ClientOptions {
 }
 
 
-// IF ExcludeSourceDomain is true, links from the base domain of the input will be 
+// If ExcludeSourceDomain is true, links from the base domain of the input will be 
 // automatically excluded from the results. 
 // Default: true
 //

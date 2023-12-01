@@ -1,6 +1,6 @@
 # metaphor-go
 
-Offical metpahor Go client. 
+Offical Metaphor Go client. 
 
 # Installation
 
