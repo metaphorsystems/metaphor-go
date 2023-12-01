@@ -17,8 +17,10 @@ const (
 	// DefaultNumResults is the default number of expected results.
 	DefaultNumResults = 10
 
+	// DefaultExcludeSourceDomain is the default value for excludeSourceDomain.
+	DefaultExcludeSourceDomain = true
+
 	// DefaultAutoprompt if true, your query will be converted to a Metaphor query.
-	// If findLinks ednpoint is used needs to be nil to omit useAutoprompt field from RequestBody.
 	DefaultAutoprompt = false
 
 	// DefaultSearchType is a string defining what type of search will be performed, "neural" or by "keyword".
@@ -40,28 +42,29 @@ const (
 )
 
 var (
-	ErrMissingApiKey          = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
-	ErrRequestFailed          = errors.New("request failed with error")
-	ErrSearchFailed           = errors.New("search failed with error")
+	ErrMissingApiKey = errors.New("missing the Metaphor API key, set it as the METAPHOR_API_KEY environment variable")
+	ErrRequestFailed = errors.New("request failed with error")
+	ErrSearchFailed = errors.New("search failed with error")
 	ErrFindSimilarLinkdFailed = errors.New("find similar links failed with error")
-	ErrGetContentsFailed      = errors.New("get contents failed with error")
-	ErrNoSearchResults        = errors.New("no search results were found")
-	ErrNoLinksFound           = errors.New("no links were found")
-	ErrNoContentExtracted     = errors.New("no content was extracted")
+	ErrGetContentsFailed = errors.New("get contents failed with error")
+	ErrNoSearchResults = errors.New("no search results were found")
+	ErrNoLinksFound = errors.New("no links were found")
+	ErrNoContentExtracted = errors.New("no content was extracted")
 )
 
 type RequestBody struct {
-	Query              string   `json:"query,omitempty"`
-	URL                string   `json:"url,omitempty"`
-	NumResults         int      `json:"numResults,omitempty"`
-	IncludeDomains     []string `json:"includeDomains,omitempty"`
-	ExcludeDomains     []string `json:"excludeDomains,omitempty"`
-	StartCrawlDate     string   `json:"startCrawlDate,omitempty"`
-	EndCrawlDate       string   `json:"endCrawlDate,omitempty"`
-	StartPublishedDate string   `json:"startPublishedDate,omitempty"`
-	EndPublishedDate   string   `json:"endPublishedDate,omitempty"`
-	UseAutoprompt      bool     `json:"useAutoprompt,omitempty"`
-	Type               string   `json:"type,omitempty"`
+	Query               string   `json:"query,omitempty"`
+	URL                 string   `json:"url,omitempty"`
+	NumResults          int      `json:"numResults,omitempty"`
+	IncludeDomains      []string `json:"includeDomains,omitempty"`
+	ExcludeDomains      []string `json:"excludeDomains,omitempty"`
+	StartCrawlDate      string   `json:"startCrawlDate,omitempty"`
+	EndCrawlDate        string   `json:"endCrawlDate,omitempty"`
+	StartPublishedDate  string   `json:"startPublishedDate,omitempty"`
+	EndPublishedDate    string   `json:"endPublishedDate,omitempty"`
+	ExcludeSourceDomain bool     `json:"excludeSourceDomain,omitempty"`
+	UseAutoprompt       bool     `json:"useAutoprompt,omitempty"`
+	Type                string   `json:"type,omitempty"`
 }
 
 type Client struct {
@@ -157,9 +160,10 @@ func (client *Client) Search(ctx context.Context, query string, options ...Clien
 func (client *Client) FindSimilar(ctx context.Context, url string, options ...ClientOptions) (*SearchResponse, error) {
 	searchResults := &SearchResponse{}
 	client.RequestBody = &RequestBody{
-		URL:           url,
-		NumResults:    DefaultNumResults,
-		UseAutoprompt: DefaultAutoprompt,
+		URL:           			 url,
+		NumResults:    			 DefaultNumResults,
+		UseAutoprompt: 			 DefaultAutoprompt,
+		ExcludeSourceDomain: DefaultExcludeSourceDomain,
 	}
 
 	client.loadOptions(options...)

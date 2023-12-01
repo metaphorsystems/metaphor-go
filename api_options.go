@@ -1,15 +1,16 @@
 package metaphor
 
 type RequestOptions struct {
-	NumResults         int      `json:"numResults,omitempty"`
-	IncludeDomains     []string `json:"includeDomains,omitempty"`
-	ExcludeDomains     []string `json:"excludeDomains,omitempty"`
-	StartCrawlDate     string   `json:"startCrawlDate,omitempty"`
-	EndCrawlDate       string   `json:"endCrawlDate,omitempty"`
-	StartPublishedDate string   `json:"startPublishedDate,omitempty"`
-	EndPublishedDate   string   `json:"endPublishedDate,omitempty"`
-	UseAutoprompt      bool     `json:"useAutoprompt,omitempty"`
-	Type               string   `json:"type,omitempty"`
+	NumResults          int      `json:"numResults,omitempty"`
+	IncludeDomains      []string `json:"includeDomains,omitempty"`
+	ExcludeDomains      []string `json:"excludeDomains,omitempty"`
+	StartCrawlDate      string   `json:"startCrawlDate,omitempty"`
+	EndCrawlDate        string   `json:"endCrawlDate,omitempty"`
+	StartPublishedDate  string   `json:"startPublishedDate,omitempty"`
+	EndPublishedDate    string   `json:"endPublishedDate,omitempty"`
+	ExcludeSourceDomain bool     `json:"excludeSourceDomain,omitempty"`
+	UseAutoprompt       bool     `json:"useAutoprompt,omitempty"`
+	Type                string   `json:"type,omitempty"`
 }
 
 type ClientOptions func(*Client)
@@ -115,6 +116,21 @@ func WithEndPublishedDate(endPublishedDate string) ClientOptions {
 	}
 }
 
+
+// If ExcludeSourceDomain is true, links from the base domain of the input will be 
+// automatically excluded from the results. 
+// Default: true
+//
+// Parameters:
+// - excludeSourceDomain: a boolean value indicating whether to exclude the source domain.
+//
+// Returns: a ClientOptions function that updates the ExcludeSourceDomain field in the RequestBody struct.
+func WithExcludeSourceDomain(excludeSourceDomain bool) ClientOptions {
+	return func(client *Client) {
+		client.RequestBody.ExcludeSourceDomain = excludeSourceDomain
+	}
+}
+
 // WithAutoprompt sets the value of the UseAutoprompt field in the RequestBody.
 // If true, your query will be converted to a Metaphor query. Latency will be much higher.
 // Default: false
@@ -177,6 +193,10 @@ func WithRequestOptions(reqOptions *RequestOptions) ClientOptions {
 
 		if reqOptions.StartPublishedDate != "" {
 			client.RequestBody.StartPublishedDate = reqOptions.StartPublishedDate
+		}
+
+		if reqOptions.ExcludeSourceDomain {
+			client.RequestBody.ExcludeSourceDomain = reqOptions.ExcludeSourceDomain
 		}
 
 		if reqOptions.UseAutoprompt {
